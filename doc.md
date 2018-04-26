@@ -217,3 +217,135 @@ dependencies {
 	testCompile("org.springframework.boot:spring-boot-starter-test")
 }
 ```
+
+### Installing the Spring Boot CLI
+ Spring Boot CLI (Command Line Interface)는 스프링을 이용한 프로토타입을 빠르게 만들 수 있게 합니다.
+이것은 당신의 [Groovy](http://groovy-lang.org/) Script를 사용할 수 있게합니다. 이 말은 즉슨, 상용구 코드(boilerplate code)가 없이도 친 Java적인 언어를 사용합니다.
+
+ CLI는 Spring 어플리케이션을 처음부터 시작하기 위한 제일 빠른 방법이지만, Spring Boot를 이용하는데 있어서 CLI를 사용하지 않아도 됩니다.
+
+
+#### Manual Installation
+ Spring 소프트웨어 저장소에서 Spring CLI 배포판을 다운로드 할 수 있습니다. :
+
+ [spring-boot-cli-2.1.0.BUILD-SNAPSHOT-bin.zip](https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/2.1.0.BUILD-SNAPSHOT/spring-boot-cli-2.1.0.BUILD-SNAPSHOT-bin.zip)
+ [spring-boot-cli-2.1.0.BUILD-SNAPSHOT-bin.tar.gz](https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/2.1.0.BUILD-SNAPSHOT/spring-boot-cli-2.1.0.BUILD-SNAPSHOT-bin.tar.gz)
+
+ 최신 [스냅샷](https://repo.spring.io/snapshot/org/springframework/boot/spring-boot-cli/) 또한 사용 가능합니다.  
+
+ 처음 다운로드 후, 압축을 푼 후 [INSTALL.txt](https://raw.githubusercontent.com/spring-projects/spring-boot/master/spring-boot-project/spring-boot-cli/src/main/content/INSTALL.txt)의 내용을 읽고 따라 주세요. 요약하자면 `.zip` 파일 안에는 `/bin` 폴더에 `spring` script(windows에선 `spring.bat`)가 있습니다. `.jar`파일을 사용하신다면 `java -jar`를 사용 할 수 있습니다. (스크립트의 도움으로 classpath가 올바르게 되었는 지 알 수 있습니다.)
+
+#### Installation with SDKMAN!
+
+SDKMAN! (The Software Development Kit Manager)는 Groovy와 Sprint Boot CLI를 포함한 다양한 바이너리 SDK들의 여려 버전을 관리 할 수 있게 해줍니다. [sdkman.io](http://sdkman.io/)를 사용해 보세요! 아래 명령어를 따라 Spring Boot에 설치 할 수 있습니다. :  
+
+```
+$ sdk install springboot
+$ spring --version
+Spring Boot v2.1.0.BUILD-SNAPSHOT
+```
+
+만약 개발 버전를 위한 CLI와 당신의 설치를 위한 버전으로 쉽게 접근하고 싶으시다면, 다음을 따라주세요.:  
+
+```
+$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-2.1.0.BUILD-SNAPSHOT-bin/spring-2.1.0.BUILD-SNAPSHOT/
+$ sdk default springboot dev
+$ spring --version
+Spring CLI v2.1.0.BUILD-SNAPSHOT
+```
+
+앞서 알려드린 설치는 `dev`로 이름으로 `spring` 인스턴스를 설치합니다. Spring Boot를 다시 빌드 할 때 마다 타겟 빌드 위치에는 Spring이 업데이트하게 됩니다.  
+
+다음을 따라 실행되는 걸 볼 수 있습니다.  
+
+```
+$ sdk ls springboot
+
+================================================================================
+Available Springboot Versions
+================================================================================
+> + dev
+* 2.1.0.BUILD-SNAPSHOT
+
+================================================================================
++ - local version
+* - installed
+> - currently in use
+================================================================================
+```
+
+#### OSX Homebrew Installation  
+
+Mac과 Homebrew를 사용하신다면, 다음 명령어를 따라 Spring Boot CLI를 설치 할 수 있습니다. :
+
+```
+$ brew tap pivotal/tap
+$ brew install springboot
+```
+
+Homebrew는 `/usr/local/bin` 위치에 `spring`을 설치합니다.
+
+#### OSX Homebrew Installation  
+
+Mac과 Homebrew를 사용하신다면, 다음 명령어를 따라 Spring Boot CLI를 설치 할 수 있습니다. :
+
+```
+$ brew tap pivotal/tap
+$ brew install springboot
+```
+
+Homebrew는 `/usr/local/bin` 위치에 `spring`을 설치합니다.
+
+#### MacPorts Installation  
+
+Mac과 MacPorts를 사용하신다면, 다음 명령어를 따라 Spring Boot CLI를 설치 할 수 있습니다. :  
+
+```
+$ sudo port install spring-boot-cli
+```
+
+#### Command-line Completion
+
+Spring Boot CLI는 `BASH`와 `zsh`쉘을 통한 설치 완료를 위한 스크립트를 포함하고 있습니다. 스크립트(spring)를 모든 쉘로 사용하거나, 개인 프로젝트나 시스템 전체에 (your personal or system-wide) 초기화 완료에 사용 할 수 있습니다. 데비안 시스템에서는 시스템 전체의 스크립트가 `/shell-completion/bash`에 있고 이 곳에 있는 모든 스크립트는 새로운 쉘이 시작 할 떄 실행됩니다. 예를 들어 SDKMAN를 사용하여 설치했으면 직접 실행시키기 위해서 다음의 명령어를 사용하면 됩니다. :  
+
+```
+$ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
+$ spring <HIT TAB HERE>
+  grab  help  jar  run  test  version
+```  
+
+#### Quick-start Spring CLI Example  
+
+다음을 간단한 웹 어플리케이션을 통해 설치가 됬을믈 확인 할 수 있습니다. 시작하기 위해 `app.groovy`의 이름으로 아래 내용을 따라 해보세요. :  
+
+```
+@RestController
+class ThisWillActuallyRun {
+
+	@RequestMapping("/")
+	String home() {
+		"Hello World!"
+	}
+
+}
+```
+
+쉘에서 다음을 따라 실행합니다. :
+
+```
+$ spring run app.groovy
+```
+
+Note
+
+> 처음에는 dependencies 다운로드 때문에 실행이 느립니다. 이후부터는 훨씬 빠른 속도로 실행됩니다.  
+
+[localhost:8080](localhost:8080)를 열면 다음과 같은 출력이 보일것 입니다.  
+
+Hello World!  
+
+
+### Upgrading from an Earlier Version of Spring Boot
+
+이전 버전의 Spring Boot로부터 업드레이드를 한다면, ["migration guide" on the project wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide)에서 제공되는 업그레이드 소개를 확인하세요. ["release notes"](https://github.com/spring-projects/spring-boot/wiki)의 각 릴리즈들을 확인하여 새로운 핵심적인 정보들(new and notewrthy) 확인합니다.  
+기존 CLI 설치를 업그레이드하려면 해당 패키지 관리자 명령 (예 : brew upgrade)을 사용하시거나, CLI를 수동으로 설치 한 경우, [standard instructions](https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#getting-started-manual-cli-installation)를 따라서 PATH 환경 변수를 업데이트하여 이전 참조 파일들을 제거합니다.  
