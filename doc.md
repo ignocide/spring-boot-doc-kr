@@ -349,3 +349,122 @@ Hello World!
 
 이전 버전의 Spring Boot로부터 업드레이드를 한다면, ["migration guide" on the project wiki](https://github.com/spring-projects/spring-boot/wiki/Spring-Boot-2.0-Migration-Guide)에서 제공되는 업그레이드 소개를 확인하세요. ["release notes"](https://github.com/spring-projects/spring-boot/wiki)의 각 릴리즈들을 확인하여 새로운 핵심적인 정보들(new and notewrthy) 확인합니다.  
 기존 CLI 설치를 업그레이드하려면 해당 패키지 관리자 명령 (예 : brew upgrade)을 사용하시거나, CLI를 수동으로 설치 한 경우, [standard instructions](https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference/htmlsingle/#getting-started-manual-cli-installation)를 따라서 PATH 환경 변수를 업데이트하여 이전 참조 파일들을 제거합니다.  
+
+
+## Chapter 11. Developing Your First Spring Boot Application  
+
+ 이 섹션에서는 Spring Boot의 중요 기능을 이용해 쉽게 "Hello Would!" 웹 어플리케이션을 만들어봅니다. 우리는 대부분의 IDE는 Maven을 지원하기 떄문에 Maven을 사용합니다.  
+
+Tip  
+  [spring.io](https://spring.io/) 웹사이트에는 Spring Boot를 이용한 많은 'Getting Started' guides 가 있습니다. 어떠한 문제가 발생하면 먼저 위의 사이트에서 확인을 하시기 바랍니다. [start.spring.io](https://start.spring.io/) 사이트에서 deplendencies 검색기에서 'Web' starter를 찾아 바로 시작 할 수 있습니다. 새로운 프로젝트 구조를 생성하고 난뒤 바로 코딩을 시작할 수 있습니다. [Spring Initalizr documentation](https://github.com/spring-io/initializr)를 확인해 자세히 알아보세요.  
+
+ 우리는 시작하기 전에 터미널을 열고 다음을 명령어를 따라 Java와 Maven의 설치된 버전을 확인 할 수 있습니다.
+
+ ```
+ $ java -version
+java version "1.8.0_102"
+Java(TM) SE Runtime Environment (build 1.8.0_102-b14)
+Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
+ ```
+
+ ```
+ $ mvn -v
+Apache Maven 3.3.9 (bb52d8502b132ec0a5a3f4c09453c07478323dc5; 2015-11-10T16:41:47+00:00)
+Maven home: /usr/local/Cellar/maven/3.3.9/libexec
+Java version: 1.8.0_102, vendor: Oracle Corporation
+ ```
+
+Note  
+  위 코드는 소유한 폴터에 생성되어야 합니다. 다음의 절차주터는 당신의 현제 디렉토리나 알맞는 폴터에서 진행됩니다. ?
+
+### 11.1 Creating the POM
+
+Maven에서의 pom.xml를 생성함으로서 시작합니다. pom.xml는 프로젝트를 만드는데 있어서 필요한 목록입니다. 당신의 Text editor를 이용해 다음을 따라하세요.
+
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>com.example</groupId>
+	<artifactId>myproject</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.0.RELEASE</version>
+	</parent>
+
+	<!-- Additional lines to be added here... -->
+
+</project>
+
+```
+
+앞의 목록은 당신에게 빌드를 제공합니다. `mvn package` 명령어를 통해 테스트 해볼 수 있습니다. (현제 상태에서 발생하는 `“jar will be empty - no content was marked for inclusion!”` 워닝은 무시할 수 있습니다.)  
+
+Note
+  요점은, 이를 통해 IDE(maven을 지원하는 가장 현대적인 java IDE)으로 프로젝트를 설정 할 수 있다는 것입니다. 간단히 말해, 우리는 위의 예제를 위해 text editor를 사용하게 될것 입니다.  
+
+#### 11.2 Adding Classpath dependencies
+
+ Spring Boot는 당신의 classpath에 jars를 추가 할 수 있도록 몇몇개의 "Starter"를 제공해 줍니다. 우리의 셈플 어플리케이션에서의 POM의 `parent`부분에 `spring-boot-starter-parent`가 이미 추가되어 있습니다. `spring-boot-starter-parent`는 유용한 Maven의 기본적인 것들을 제공해주는 특별한 starter입니다. 이는 또한 `dependency-management`에서 "blessed" dependencies에서 version 테그를 생략할 수 있게 해줍니다.  
+
+  다른 "Starters"들은 특정한 타입의 어플리케이션을 만들 때 필요한 것들을 제공해 줍니다. 웹 어플리케이션을 만든다면, `spring-boot-starter-web` 의존선을 추가하면됩니다. 그 전에는 다음 명령어를 실행하여 현재의 의존성들을 확인할수 있습니다.
+
+```
+$ mvn dependency:tree
+
+[INFO] com.example:myproject:jar:0.0.1-SNAPSHOT
+```
+
+`mvn dependency:tree` 명령어는 당신의 프로젝트의 의존성을 트리 모양으로 출력해줍니다. 당신은 `spring-boot-starter-parent`이 의존성들을 제공해주지 않는다는 것을 볼 수 있을 것 입니다. 필요한 의존성들을 `pom.xml`에서 `spring-boot-starter-web` 의존성의 `parent`부분 바로 아래에 바로 추가하면 됩니다.
+
+```
+<dependencies>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-web</artifactId>
+	</dependency>
+</dependencies>
+```
+
+`mvn dependency:tree`를 다시 실행해본다면, 추가된 의존성들을 spring boot, tomcat web server와 함깨 볼 수 있습니다.
+
+#### 11.3 Writing the code``
+
+ 이 예제 어플리케이션을 완성하기 위해서는 하나의 자바 파일이 필요합니다. 기본적으로 maven 컴파일러는 `src/main/java` 아래의 파일들을 사용합니다. 그러므로 그 구조에 따라서 `src/main/java/Example.java`으로 아래 내용을 작성합니다.   
+
+ ```
+ import org.springframework.boot.*;
+import org.springframework.boot.autoconfigure.*;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@EnableAutoConfiguration
+public class Example {
+
+	@RequestMapping("/")
+	String home() {
+		return "Hello World!";
+	}
+
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(Example.class, args);
+	}
+
+}
+ ```
+
+ 긴 코드는 아니지만 꽤 많은 일들이 일어나고 있습니다. 다음 섹션들을 통해 중요한 부분들을 단계별로 설명합니다.  
+
+#### 11.3.1  The @RestController and @RequestMapping Annotation
+
+`Example` class의 처음으로 보게 되는 annotation `@RestController`입니다. 이것은 *stereotype* annotation으로 알려져 있습니다. 이것은 코드를 읽는 사람에게 힌트를 주고 Spring에게 이 class가 특정 역활을 한다고 알려줍니다. 이번 경우에서는 이 클래스는 web @Controller이기 때문에 Spring은 들어오는 웹 요청을 처할 떄 고려하게 됩니다.  
+
+@RequestMapping annotation는 "Routing" 정보를 제공합니다. 위의 경우 `/`경로의 HTTP요청이 들어오는 것들에 대해서 `home` 메서드에 맵핑해줍니다. `@RestController` annotation은 Spring에게 요청자에게 문자열로서 결과값을 랜더링 하라고 알려줍니다.  
+
+Tip.
+    `@RestController`와 `@RequestMapping` annotation들은 Spring MVC annotation들입니다. (이것들은 Spring Boot에 속해있지 않습니다.) Spring 레퍼런스 문서의 [MVC section](https://docs.spring.io/spring/docs/5.0.4.RELEASE/spring-framework-reference/web.html#mvc)를 참고하여 더 알아보세요.  
